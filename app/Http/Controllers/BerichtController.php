@@ -14,7 +14,9 @@ class BerichtController extends Controller
      */
     public function index()
     {
-        //
+        $berichten = Bericht::latest()->get();
+        
+        return view('bericht.index', compact('berichten'));
     }
 
     /**
@@ -35,7 +37,19 @@ class BerichtController extends Controller
      */
     public function store(BerichtValidatie $request)
     {
-        Bericht::create($request->all());
+        $bericht = Bericht::create($request->all());
+
+        $file = $request->file('foto');
+
+        if ($file <> null) {
+             $path = '\fotos';            
+             $file->move(public_path().$path, $bericht->id . $file->getClientOriginalName());
+             $bericht->foto = $path . '/' . $bericht->id . $file->getClientOriginalName();
+             $bericht->save();
+        }
+
+
+        return redirect('bericht');
     }
 
     /**
@@ -57,7 +71,7 @@ class BerichtController extends Controller
      */
     public function edit(bericht $bericht)
     {
-        //
+        return view('bericht.edit', compact('bericht'));
     }
 
     /**
@@ -67,9 +81,21 @@ class BerichtController extends Controller
      * @param  \App\bericht  $bericht
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, bericht $bericht)
+    public function update(BerichtValidatie $request, bericht $bericht)
     {
-        //
+        $bericht->update($request->all());
+
+        $file = $request->file('foto');
+
+        if ($file <> null) {
+             $path = '\fotos';            
+             $file->move(public_path().$path, $bericht->id . $file->getClientOriginalName());
+             $bericht->foto = $path . '/' . $bericht->id . $file->getClientOriginalName();
+             $bericht->save();
+        }
+
+
+        return redirect('bericht');
     }
 
     /**
